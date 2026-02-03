@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block content %}
+<div class="container my-5">
+    
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">{{ page.title }}</h1>
+        <div class="bg-primary mx-auto" style="height: 5px; width: 60px;"></div>
+    </div>
+
+    {% if page.image %}
+        <div class="mb-5">
+            {% image page.image width-1200 class="img-fluid rounded shadow-sm" %}
+        </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="lh-lg text-break"> {{ page.body|richtext }}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

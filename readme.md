@@ -18,7 +18,7 @@ python manage.py migrate
 ## 4. Create superuser 
 python manage.py createsuperuser
 
-# 5. Run the server
+## 5. Run the server
 python manage.py runserver
 Frontend: http://127.0.0.1:8000/
 

@@ -1,11 +1,10 @@
 from django.db import models
-from wagtail.models import Page
+from wagtail.models import Page, Orderable
 from wagtail.fields import RichTextField
+from wagtail.admin.panels import FieldPanel, InlinePanel, PageChooserPanel
+from wagtail.snippets.models import register_snippet
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-from wagtail.models import Orderable
-from wagtail.snippets.models import register_snippet
-from wagtail.admin.panels import FieldPanel, InlinePanel, PageChooserPanel
 
 
 class HomePage(Page):
@@ -17,12 +16,47 @@ class HomePage(Page):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        # related_name="+",
+        related_name="+",  # Es buena práctica dejar el related_name así para imágenes
     )
 
     content_panels = Page.content_panels + [FieldPanel("body"), FieldPanel("image")]
 
     template = "home/home_page.html"
+
+    # LIMITAMOS HIJOS: Solo permite crear StandardPage debajo de la Home
+    subpage_types = ["home.StandardPage"]
+
+
+class StandardPage(Page):
+    """
+    Página estándar para secciones como 'Quiénes Somos', 'Servicios', etc.
+    """
+
+    intro = models.CharField(max_length=250, help_text="Texto breve introductorio")
+    body = RichTextField(blank=True)
+    image = models.ForeignKey(
+        "wagtailimages.Image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("intro"),
+        FieldPanel("image"),
+        FieldPanel("body"),
+    ]
+
+    template = "home/standard_page.html"
+
+    # LIMITAMOS PADRES: Solo puede crearse debajo de HomePage
+    parent_page_types = ["home.HomePage"]
+    # No permitimos que esta página tenga hijas (opcional)
+    subpage_types = []
+
+
+# --- SECCIÓN DE MENÚS (SNIPPETS) ---
 
 
 # 1. El item individual del menú (un enlace)
