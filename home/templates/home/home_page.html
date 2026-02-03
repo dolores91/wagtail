@@ -1,0 +1,54 @@
+
+{% load wagtailcore_tags wagtailimages_tags navigation_tags %} 
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ page.title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <h1>{{ page.title }}</h1>
+    {% load static navigation_tags %} <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+    
+        <a class="navbar-brand" href="/">Mi Sitio Web</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+        
+        {% get_menu "header" as nav_menu %}
+
+        {% if nav_menu %}
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0"> {% for item in nav_menu.menu_items.all %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == item.link %}active fw-bold{% endif %}" 
+                    aria-current="page" 
+                    href="{{ item.link }}"
+                    {% if item.open_in_new_tab %}target="_blank"{% endif %}>
+                        
+                        {{ item.title }}
+                    </a>
+                </li>
+            {% endfor %}
+
+            </ul>
+        {% endif %}
+        
+        </div>
+        </div>
+    </nav>
+    {{ page.body|richtext }}
+    {% if page.image %}
+        {% image page.image original %}
+        
+        {% endif %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
