@@ -1,21 +1,12 @@
-{% extends "base.html" %}
-{% load wagtailcore_tags wagtailimages_tags %}
+{% extends "home/base.html" %}
+{% load wagtailcore_tags %}
 
 {% block content %}
-    <div class="container mt-5">
+<div class="container">
 
-        
-        <h1 class="display-4">{{ page.title }}</h1>
-        
-        <div class="lead">
-            {{ page.body|richtext }}
-            </div>
-            <div class="col-lg-5">
-        {% if page.image %}
-            <div class="card border-0 shadow rounded-3 overflow-hidden">
-                {% image page.image fill-500x500 class="img-fluid" %}
-            </div>
-        {% endif %}
-    </div>
-    </div>
+    {% for block in page.body %}
+        {% include_block block %}
+    {% endfor %}
+
+</div>
 {% endblock %}

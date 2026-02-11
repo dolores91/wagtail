@@ -1,65 +1,78 @@
 from django.db import models
+from wagtail.models import Page
+from wagtail.fields import StreamField
+from wagtail.admin.panels import FieldPanel
+from . import blocks
+from django.db import models
+
 from wagtail.models import Page, Orderable
-from wagtail.fields import RichTextField
-from wagtail.admin.panels import FieldPanel, InlinePanel, PageChooserPanel
+from wagtail.fields import StreamField
+from wagtail.admin.panels import (
+    FieldPanel,
+    InlinePanel,
+    PageChooserPanel,
+)
 from wagtail.snippets.models import register_snippet
-from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
+from modelcluster.fields import ParentalKey
 
 
+# HOME
 class HomePage(Page):
-    body = RichTextField(
-        blank=True, null=True, features=["bold", "italic", "h2", "h3", "ol", "ul"]
-    )
-    image = models.ForeignKey(
-        "wagtailimages.Image",
-        null=True,
+    body = StreamField(
+        [
+            ("hero", blocks.HeroBlock()),
+            ("highlight", blocks.HighlightBlock()),
+            ("featured_news", blocks.FeaturedNewsBlock()),
+            ("cta", blocks.CTABlock()),
+            ("divider", blocks.DividerBlock()),
+        ],
+        use_json_field=True,
         blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",  # Es buena práctica dejar el related_name así para imágenes
+        default=list,
     )
 
-    content_panels = Page.content_panels + [FieldPanel("body"), FieldPanel("image")]
+    content_panels = Page.content_panels + [
+        FieldPanel("body"),
+    ]
 
-    template = "home/home_page.html"
-
-    # LIMITAMOS HIJOS: Solo permite crear StandardPage debajo de la Home
     subpage_types = ["home.StandardPage"]
 
 
+# Standard page
 class StandardPage(Page):
-    """
-    Página estándar para secciones como 'Quiénes Somos', 'Servicios', etc.
-    """
+    intro = models.CharField(max_length=250, blank=True)
 
-    intro = models.CharField(max_length=250, help_text="Texto breve introductorio")
-    body = RichTextField(blank=True)
-    image = models.ForeignKey(
-        "wagtailimages.Image",
-        null=True,
+    body = StreamField(
+        [
+            ("text", blocks.RichTextBlock()),
+            ("image", blocks.ImageBlock()),
+            ("gallery", blocks.GalleryBlock()),
+            ("video", blocks.VideoEmbedBlock()),
+            ("two_columns", blocks.TwoColumnsBlock()),
+            ("features", blocks.FeaturesBlock()),
+            ("testimonial", blocks.TestimonialBlock()),
+            ("highlight", blocks.HighlightBlock()),
+            ("cta", blocks.CTABlock()),
+            ("divider", blocks.DividerBlock()),
+            ("section", blocks.SectionBlock()),
+        ],
+        use_json_field=True,
         blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
+        default=list,
     )
 
     content_panels = Page.content_panels + [
         FieldPanel("intro"),
-        FieldPanel("image"),
         FieldPanel("body"),
     ]
 
-    template = "home/standard_page.html"
-
-    # LIMITAMOS PADRES: Solo puede crearse debajo de HomePage
     parent_page_types = ["home.HomePage"]
-    # No permitimos que esta página tenga hijas (opcional)
     subpage_types = []
 
 
-# --- SECCIÓN DE MENÚS (SNIPPETS) ---
-
-
-# 1. El item individual del menú (un enlace)
+# SNIPPETS
+# menu item
 class MenuItem(Orderable):
     menu = ParentalKey("Menu", related_name="menu_items", on_delete=models.CASCADE)
     link_title = models.CharField(
@@ -100,18 +113,16 @@ class MenuItem(Orderable):
         return "Sin título"
 
 
-# 2. El contenedor del menú (ej: "Header", "Footer")
+# menu container
 @register_snippet
 class Menu(ClusterableModel):
     title = models.CharField(max_length=100)
-    slug = models.SlugField(
-        unique=True, help_text="Identificador único (ej: header-menu)"
-    )
+    slug = models.SlugField(unique=True, help_text="Id")
 
     panels = [
         FieldPanel("title"),
         FieldPanel("slug"),
-        InlinePanel("menu_items", label="Elementos del Menú"),
+        InlinePanel("menu_items", label="Menu items"),
     ]
 
     def __str__(self):

@@ -1,0 +1,24 @@
+<section class="py-5 mb-5 bg-light">
+  <div class="container">
+    <div class="row align-items-center">
+
+      <div class="col-md-6">
+        <h1>{{ value.title }}</h1>
+        {% if value.subtitle %}
+          <p class="lead">{{ value.subtitle }}</p>
+        {% endif %}
+
+        {% if value.cta_text %}
+          <a href="{{ value.cta_url }}" class="btn btn-primary">
+            {{ value.cta_text }}
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <img src="{{ value.image.url }}" class="img-fluid rounded">
+      </div>
+
+    </div>
+  </div>
+</section>

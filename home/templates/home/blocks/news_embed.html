@@ -1,0 +1,13 @@
+<div class="card my-4">
+  <div class="card-body">
+    <small class="text-muted">{{ value.source }}</small>
+
+    <div class="ratio ratio-16x9 my-3">
+      {{ value.embed }}
+    </div>
+
+    {% if value.description %}
+      <p>{{ value.description }}</p>
+    {% endif %}
+  </div>
+</div>

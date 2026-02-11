@@ -1,0 +1,12 @@
+<div class="list-group my-4">
+  {% for item in value %}
+    <a href="{{ item.url }}"
+       class="list-group-item list-group-item-action"
+       target="_blank">
+
+      <h6 class="mb-1">{{ item.title }}</h6>
+      <small class="text-muted">{{ item.source }}</small>
+
+    </a>
+  {% endfor %}
+</div>

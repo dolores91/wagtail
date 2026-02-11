@@ -1,0 +1,29 @@
+{% load navigation_tags %}
+
+{% get_menu "header-menu" as header_menu %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/">My Association</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#mainNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      {% if header_menu %}
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        {% for item in header_menu.menu_items.all %}
+        <li class="nav-item">
+          <a class="nav-link"
+             href="{{ item.link }}"
+             {% if item.open_in_new_tab %}target="_blank"{% endif %}>
+            {{ item.title }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</nav>

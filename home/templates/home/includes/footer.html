@@ -1,0 +1,38 @@
+{% load navigation_tags %}
+
+{% get_menu "footer-menu" as footer_menu %}
+
+<footer class="bg-dark text-light mt-5">
+  <div class="container py-4">
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <h5>My Association</h5>
+        <p class="small">
+          Non-profit organisation committed to the community.
+        </p>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        {% if footer_menu %}
+        <ul class="list-unstyled">
+          {% for item in footer_menu.menu_items.all %}
+          <li>
+            <a class="text-light text-decoration-none"
+               href="{{ item.link }}"
+               {% if item.open_in_new_tab %}target="_blank"{% endif %}>
+              {{ item.title }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="text-center small border-top pt-3 mt-3">
+      © {{ now|date:"Y" }} My Association
+    </div>
+
+  </div>
+</footer>

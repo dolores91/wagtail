@@ -1,18 +1,20 @@
 from .base import *
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# Modo desarrollo
 DEBUG = True
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-p=3_fw+vu@c=&%8der)*!3#_se4ikc#0eaw_1mrwxz+6!z7=li"
+# Permitir localhost
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+SECRET_KEY = "django-insecure-esta-es-una-clave-de-desarrollo"
+# Base de datos SQLite (la misma que en base.py)
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
 
-# SECURITY WARNING: define the correct hosts in production!
-ALLOWED_HOSTS = ["*"]
-
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-
-try:
-    from .local import *
-except ImportError:
-    pass
+# Archivos estáticos y media (igual que base.py)
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+STATIC_ROOT = BASE_DIR / "static"
+MEDIA_ROOT = BASE_DIR / "media"

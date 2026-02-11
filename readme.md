@@ -1,128 +1,224 @@
-🦅 Wagtail CMS Project - Developer Guide
-This project is built with Django and Wagtail CMS. Unlike traditional Django, content here is hierarchical (Page Tree) and highly editable via the administration panel.
+Perfect — here is your **updated README in English**, reflecting the new block architecture and page structure.
 
-🚀 1. Installation & Running
-To set up the project in your local environment:
+---
 
-Bash
-## 1. Activate virtual environment (Windows)
+# 🦅 Wagtail CMS Project – Developer Guide
+
+This project is built with **Django + Wagtail CMS**.
+
+Unlike traditional Django projects, content here is:
+
+* Hierarchical (Page Tree)
+* Component-based (StreamField Blocks)
+* Fully editable through the Wagtail Admin
+
+The structure is designed to give editors flexibility **without breaking design consistency**.
+
+---
+
+# 🚀 1. Installation & Running
+
+## Setup locally
+
+```bash
+# 1. Activate virtual environment (Windows)
 .\mysiteenv\Scripts\activate
 
-## 2. Install dependencies
+# 2. Install dependencies
 pip install -r requirements.txt
 
-## 3. Apply migrations (ALWAYS do this after changing models.py)
+# 3. Apply migrations (ALWAYS after changing models.py)
 python manage.py makemigrations
 python manage.py migrate
 
-## 4. Create superuser 
+# 4. Create superuser
 python manage.py createsuperuser
 
-## 5. Run the server
+# 5. Run server
 python manage.py runserver
-Frontend: http://127.0.0.1:8000/
+```
 
-Admin Panel: http://127.0.0.1:8000/admin/
+Frontend:
+[http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
-📄 2. How to Create New Pages (Models)
-In Wagtail, every "Page Type" (Home, Blog, Contact) is defined as a model in models.py.
+Admin Panel:
+[http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
-Step A: Define the Model (home/models.py)
-Python
-from wagtail.models import Page
-from wagtail.fields import RichTextField
-from wagtail.admin.panels import FieldPanel
+---
 
-class BlogPage(Page):
-    # 1. Database fields
-    date = models.DateField("Post Date")
-    intro = models.CharField(max_length=250)
-    body = RichTextField(blank=True)
-    
-    # 2. Editor panels (Admin interface)
-    content_panels = Page.content_panels + [
-        FieldPanel('date'),
-        FieldPanel('intro'),
-        FieldPanel('body'),
-    ]
-    
-    # 3. (Optional) Specific template. 
-    # By default, it looks for: home/templates/home/blog_page.html
-    template = "home/blog_page.html"
+# 🧱 2. Content Architecture (StreamField Blocks)
 
-🎨 3. Templates Cheatsheet (HTML)
-To display content, Wagtail uses specific tags. Always load these at the top of your HTML file:
+The project uses a structured block system divided into categories.
 
-    HTML
-    {% load static wagtailcore_tags wagtailimages_tags %}
-    Displaying Text
-    HTML
-    <h1>{{ page.title }}</h1>
+This prevents design chaos while keeping content flexible.
 
-    <div class="content">
-        {{ page.body|richtext }}
-    </div>
-    Displaying Images
-    Do not use {{ page.image }} directly. Use the {% image %} tag:
+---
 
-    HTML
-    {% image page.main_image original %}
+## 🧱 BASE BLOCKS (Reusable)
 
-    {% image page.main_image fill-300x300 class="img-fluid rounded" %}
+👉 Available in `StandardPage`
+👉 Some also available in `HomePage`
 
-    {% image page.main_image width-500 %}
-    Links to internal pages
-    If you have a field linking to another internal page (PageChooserBlock or ForeignKey):
+---
 
-    HTML
-    <a href="{% pageurl page.link_page %}">Go to page</a>
+# 📄 3. Page Models & Allowed Blocks
 
-🍔 4. Menu Management (Snippets)
+Block availability is intentionally restricted per page type.
 
-In the Admin Panel:
-Go to Snippets > Menus.
+---
 
-Create/Edit a menu.
+## 🏠 HomePage
 
-IMPORTANT: The slug must be header (for the main menu) or footer (for the footer).
+**Goal:** Impact, navigation, conversions
 
-In the Code (base.html):
-We use our custom tag navigation_tags.
+Allowed blocks:
 
-    HTML
-    {% load navigation_tags %}
+* `HeroBlock`
+* `HighlightBlock`
+* `FeaturedServicesBlock`
+* `FeaturedNewsBlock`
+* `CTABlock`
+* `DividerBlock`
 
-    {% get_menu "header" as nav_menu %}
+Not allowed:
 
-    {% if nav_menu %}
-    <ul>
-        {% for item in nav_menu.menu_items.all %}
-        <li>
-            <a href="{{ item.link }}" class="{% if request.path == item.link %}active{% endif %}">
-                {{ item.title }}
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-🛠 5. Common Troubleshooting
+* Free embeds
+* Long unstructured text
 
-"TemplateSyntaxError: Invalid filter: 'richtext'"
-Solution: You forgot to add {% load wagtailcore_tags %} at the top of your HTML file.
+---
 
-"Images are broken / not loading"
-Solution: Ensure that your urls.py (project level) is configured to serve static media files in debug mode:
+## 📄 StandardPage
 
-Python
+**Goal:** Flexible structured content
+
+Allowed blocks:
+
+* `RichTextBlock`
+* `ImageBlock`
+* `GalleryBlock`
+* `VideoEmbedBlock`
+* `TwoColumnsBlock`
+* `FeaturesBlock`
+* `TestimonialBlock`
+* `HighlightBlock`
+* `CTABlock`
+* `DividerBlock`
+* `SectionBlock`
+
+Used for:
+
+* About us
+* Services
+* Contact (text + CTA to form)
+
+---
+
+## 📰 News Page (Specialized StandardPage)
+
+News content is external and curated.
+
+Use a restricted block set:
+
+Allowed:
+
+* `ExternalNewsEmbedBlock`
+* `ExternalNewsListBlock`
+* `RichTextBlock` (intro only)
+* `HighlightBlock`
+* `DividerBlock`
+
+Editors curate — no direct article writing.
+
+---
+
+## 🔍 Search Page
+
+* No StreamField
+* Not editable
+* Functional only
+
+---
+
+# 🎨 4. Template Cheatsheet
+
+Always load:
+
+```html
+{% load static wagtailcore_tags wagtailimages_tags %}
+```
+
+---
+
+### Displaying Rich Text
+
+```html
+{{ page.body|richtext }}
+```
+
+---
+
+### Displaying Images
+
+```html
+{% image page.main_image original %}
+{% image page.main_image fill-300x300 %}
+{% image page.main_image width-500 %}
+```
+
+---
+
+### Internal Page Links
+
+```html
+<a href="{% pageurl page.link_page %}">Go to page</a>
+```
+
+---
+
+# 🍔 5. Menu Management (Snippets)
+
+Admin Panel → Snippets → Menus
+
+In `base.html`:
+
+* `header` (main navigation)
+* `footer` (footer menu)
+
+
+# 🛠 6. Common Troubleshooting
+
+### Invalid filter: 'richtext'
+
+You forgot:
+
+```html
+{% load wagtailcore_tags %}
+```
+
+---
+
+### Images not loading
+
+Ensure `urls.py` serves media in DEBUG:
+
+```python
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-"I created a page but get a 404 Error"
-Solution:
+```
 
-Is the page Published? (Check "Publish" vs "Save Draft").
+---
 
-If it's the Home page, verify in Settings > Sites that it is assigned as the Root page for localhost (port 8000).
+### 404 After Creating a Page
 
-📦 6. Styles
+* Is it Published?
+* Is the Home page assigned in Settings → Sites?
 
-The project uses Bootstrap 5 via CDN.
+---
+
+# 📦 7. Styles
+
+The project uses **Bootstrap 5 via CDN**.
+
+Custom styles should extend Bootstrap rather than override core layout behavior.
+
+

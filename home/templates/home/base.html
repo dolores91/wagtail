@@ -1,0 +1,35 @@
+{% load static %}
+{% load wagtailcore_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{{ page.title }}{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    >
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    {% include "home/includes/header.html" %}
+
+    <main class="py-5">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include "home/includes/footer.html" %}
+
+    <!-- Bootstrap 5 JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
